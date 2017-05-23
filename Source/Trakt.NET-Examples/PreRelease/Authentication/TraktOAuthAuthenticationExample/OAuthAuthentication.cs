@@ -6,14 +6,14 @@
     using TraktApiSharp.Authentication;
     using TraktApiSharp.Exceptions;
 
-    class OAuthAuthentication
+    internal static class OAuthAuthentication
     {
         private const string CLIENT_ID = "ENTER_CLIENT_ID_HERE";
         private const string CLIENT_SECRET = "ENTER_CLIENT_SECRET_HERE";
 
         private static TraktClient _client = null;
 
-        static void Main(string[] args)
+        private static void Main()
         {
             try
             {

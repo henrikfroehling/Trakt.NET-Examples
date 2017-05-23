@@ -4,14 +4,14 @@
     using TraktApiSharp;
     using TraktApiSharp.Authentication;
 
-    class Configuration
+    internal static class Configuration
     {
         private const string CLIENT_ID = "FAKE_CLIENT_ID";
         private const string CLIENT_SECRET = "FAKE_CLIENT_SECRET";
 
-        static void Main(string[] args)
+        private static void Main()
         {
-            TraktClient client = new TraktClient(CLIENT_ID);
+            var client = new TraktClient(CLIENT_ID);
 
             Console.WriteLine($"Client Id: {client.ClientId}");
             Console.WriteLine($"Client Secret: {client.ClientSecret}\n");
@@ -32,7 +32,7 @@
             Console.WriteLine($"Requests with Authorization possible: {client.IsValidForUseWithAuthorization}");
 
             Console.WriteLine("-------------------------------------------------------");
-            
+
             client.Authorization = TraktAuthorization.CreateWith(DateTime.Now, 90 * 24 * 3600, "FakeAccessToken", "FakeRefreshToken");
 
             Console.WriteLine($"Client Id: {client.ClientId}");

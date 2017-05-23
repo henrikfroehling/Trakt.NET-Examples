@@ -5,17 +5,16 @@
     using TraktApiSharp;
     using TraktApiSharp.Exceptions;
     using TraktApiSharp.Objects.Get.Shows;
-    using TraktApiSharp.Objects.Get.Shows.Implementations;
     using TraktApiSharp.Requests.Parameters;
 
-    class GetSingleShow
+    internal static class GetSingleShow
     {
         private const string CLIENT_ID = "ENTER_CLIENT_ID_HERE";
         private const string DEFAULT_SHOW_SLUG = "game-of-thrones";
 
         private static TraktClient _client = null;
 
-        static void Main(string[] args)
+        private static void Main()
         {
             try
             {
@@ -39,7 +38,7 @@
             Console.ReadLine();
         }
 
-        static void SetupClient()
+        private static void SetupClient()
         {
             if (_client == null)
             {
@@ -50,7 +49,7 @@
             }
         }
 
-        static async Task GetShow(string showIdOrSlug)
+        private static async Task GetShow(string showIdOrSlug)
         {
             try
             {
@@ -79,7 +78,7 @@
             }
         }
 
-        static async Task GetShowMinimal(string showIdOrSlug)
+        private static async Task GetShowMinimal(string showIdOrSlug)
         {
             Console.WriteLine("------------------------- Show Minimal -------------------------");
             TraktShow show = await _client.Shows.GetShowAsync(showIdOrSlug);
@@ -87,7 +86,7 @@
             Console.WriteLine("----------------------------------------------------------------");
         }
 
-        static async Task GetShowFull(string showIdOrSlug)
+        private static async Task GetShowFull(string showIdOrSlug)
         {
             var extendedInfo = new TraktExtendedInfo().SetFull();
 
@@ -97,14 +96,14 @@
             Console.WriteLine("-------------------------------------------------------------");
         }
 
-        static void WriteShowMinimal(TraktShow show)
+        private static void WriteShowMinimal(TraktShow show)
         {
             if (show != null)
             {
                 Console.WriteLine($"Title: {show.Title}");
                 Console.WriteLine($"Year: {show.Year ?? 0}");
 
-                TraktShowIds ids = (TraktShowIds)show.Ids; // TODO use interface
+                TraktShowIds ids = show.Ids;
 
                 if (ids != null)
                 {
@@ -118,7 +117,7 @@
             }
         }
 
-        static void WriteShowFull(TraktShow show)
+        private static void WriteShowFull(TraktShow show)
         {
             WriteShowMinimal(show);
 
@@ -129,7 +128,7 @@
                 if (show.FirstAired.HasValue)
                     Console.WriteLine($"First Aired (UTC): {show.FirstAired.Value}");
 
-                TraktShowAirs airs = (TraktShowAirs)show.Airs; // TODO use interface
+                TraktShowAirs airs = show.Airs;
 
                 if (airs != null)
                 {
