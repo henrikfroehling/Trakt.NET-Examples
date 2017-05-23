@@ -6,14 +6,14 @@
     using TraktApiSharp.Authentication;
     using TraktApiSharp.Exceptions;
 
-    class DeviceAuthentication
+    internal static class DeviceAuthentication
     {
         private const string CLIENT_ID = "ENTER_CLIENT_ID_HERE";
         private const string CLIENT_SECRET = "ENTER_CLIENT_SECRET_HERE";
 
         private static TraktClient _client = null;
 
-        static void Main(string[] args)
+        private static void Main()
         {
             try
             {
@@ -45,7 +45,7 @@
             Console.ReadLine();
         }
 
-        static void SetupClient()
+        private static void SetupClient()
         {
             if (_client == null)
             {
@@ -56,13 +56,13 @@
             }
         }
 
-        static async Task TryToDeviceAuthenticate()
+        private static async Task TryToDeviceAuthenticate()
         {
             try
             {
                 TraktDevice device = await _client.DeviceAuth.GenerateDeviceAsync();
 
-                if (device != null && device.IsValid)
+                if (device?.IsValid == true)
                 {
                     Console.WriteLine("-------------- Device created successfully --------------");
                     Console.WriteLine($"Device Created (UTC): {device.Created}");
@@ -79,7 +79,7 @@
 
                     TraktAuthorization authorization = await _client.DeviceAuth.PollForAuthorizationAsync();
 
-                    if (authorization != null && authorization.IsValid)
+                    if (authorization?.IsValid == true)
                     {
                         Console.WriteLine("-------------- Authentication successful --------------");
                         WriteAuthorizationInformation(authorization);
@@ -97,13 +97,13 @@
             }
         }
 
-        static async Task TryToRefreshAuthorization()
+        private static async Task TryToRefreshAuthorization()
         {
             try
             {
                 TraktAuthorization newAuthorization = await _client.DeviceAuth.RefreshAuthorizationAsync();
 
-                if (newAuthorization != null && newAuthorization.IsValid)
+                if (newAuthorization?.IsValid == true)
                 {
                     Console.WriteLine("-------------- Authorization refreshed successfully --------------");
                     WriteAuthorizationInformation(newAuthorization);
@@ -120,7 +120,7 @@
             }
         }
 
-        static async Task TryToRevokeAuthorization()
+        private static async Task TryToRevokeAuthorization()
         {
             try
             {
@@ -140,7 +140,7 @@
             }
         }
 
-        static void WriteAuthorizationInformation(TraktAuthorization authorization)
+        private static void WriteAuthorizationInformation(TraktAuthorization authorization)
         {
             Console.WriteLine($"Created (UTC): {authorization.Created}");
             Console.WriteLine($"Access Scope: {authorization.AccessScope.DisplayName}");
@@ -162,7 +162,7 @@
             Console.WriteLine($"Expires in {days} Days, {hours} Hours, {minutes} Minutes");
         }
 
-        static void PrintTraktException(TraktException ex)
+        private static void PrintTraktException(TraktException ex)
         {
             Console.WriteLine("-------------- Trakt Exception --------------");
             Console.WriteLine($"Exception message: {ex.Message}");
@@ -174,7 +174,7 @@
             Console.WriteLine("---------------------------------------------");
         }
 
-        static void PrintException(Exception ex)
+        private static void PrintException(Exception ex)
         {
             Console.WriteLine("-------------- Exception --------------");
             Console.WriteLine($"Exception message: {ex.Message}");

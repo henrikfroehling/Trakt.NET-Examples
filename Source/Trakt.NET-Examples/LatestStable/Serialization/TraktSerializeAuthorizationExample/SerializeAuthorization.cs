@@ -5,14 +5,14 @@
     using TraktApiSharp.Authentication;
     using TraktApiSharp.Services;
 
-    class SerializeAuthorization
+    internal static class SerializeAuthorization
     {
         private const string CLIENT_ID = "FAKE_CLIENT_ID";
         private const string CLIENT_SECRET = "FAKE_CLIENT_SECRET";
 
-        static void Main(string[] args)
+        private static void Main()
         {
-            TraktClient client = new TraktClient(CLIENT_ID, CLIENT_SECRET);
+            var client = new TraktClient(CLIENT_ID, CLIENT_SECRET);
 
             TraktAuthorization fakeAuthorization = TraktAuthorization.CreateWith(DateTime.Now, 90 * 24 * 3600, "FakeAccessToken", "FakeRefreshToken");
             client.Authorization = fakeAuthorization;
