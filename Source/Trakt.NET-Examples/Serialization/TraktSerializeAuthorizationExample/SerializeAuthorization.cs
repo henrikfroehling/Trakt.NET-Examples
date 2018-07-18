@@ -1,25 +1,26 @@
 ﻿namespace TraktSerializeAuthorizationExample
 {
     using System;
-    using TraktApiSharp;
-    using TraktApiSharp.Authentication;
-    using TraktApiSharp.Services;
+    using System.Threading.Tasks;
+    using TraktNet;
+    using TraktNet.Objects.Authentication;
+    using TraktNet.Services;
 
     internal static class SerializeAuthorization
     {
         private const string CLIENT_ID = "FAKE_CLIENT_ID";
         private const string CLIENT_SECRET = "FAKE_CLIENT_SECRET";
 
-        private static void Main()
+        private static async Task Main()
         {
             var client = new TraktClient(CLIENT_ID, CLIENT_SECRET);
 
-            TraktAuthorization fakeAuthorization = TraktAuthorization.CreateWith(DateTime.Now, 90 * 24 * 3600, "FakeAccessToken", "FakeRefreshToken");
+            ITraktAuthorization fakeAuthorization = TraktAuthorization.CreateWith(DateTime.Now, 90 * 24 * 3600, "FakeAccessToken", "FakeRefreshToken");
             client.Authorization = fakeAuthorization;
 
             Console.WriteLine("Fake Authorization:");
-            Console.WriteLine($"Created (UTC): {fakeAuthorization.Created}");
-            Console.WriteLine($"Access Scope: {fakeAuthorization.AccessScope.DisplayName}");
+            Console.WriteLine($"Created (UTC): {fakeAuthorization.CreatedAt}");
+            Console.WriteLine($"Access Scope: {fakeAuthorization.Scope.DisplayName}");
             Console.WriteLine($"Refresh Possible: {fakeAuthorization.IsRefreshPossible}");
             Console.WriteLine($"Valid: {fakeAuthorization.IsValid}");
             Console.WriteLine($"Token Type: {fakeAuthorization.TokenType.DisplayName}");
@@ -31,7 +32,7 @@
             Console.WriteLine("-------------------------------------------------------------");
 
             //string fakeAuthorizationJson = TraktSerializationService.Serialize(client.Authorization);
-            string fakeAuthorizationJson = TraktSerializationService.Serialize(fakeAuthorization);
+            string fakeAuthorizationJson = await TraktSerializationService.SerializeAsync(fakeAuthorization).ConfigureAwait(false);
 
             if (!string.IsNullOrEmpty(fakeAuthorizationJson))
             {
@@ -40,15 +41,15 @@
 
                 Console.WriteLine("-------------------------------------------------------------");
 
-                TraktAuthorization deserializedFakeAuthorization = TraktSerializationService.DeserializeAuthorization(fakeAuthorizationJson);
+                ITraktAuthorization deserializedFakeAuthorization = await TraktSerializationService.DeserializeAsync(fakeAuthorizationJson).ConfigureAwait(false);
 
                 if (deserializedFakeAuthorization != null)
                 {
                     client.Authorization = deserializedFakeAuthorization;
 
                     Console.WriteLine("Deserialized Fake Authorization:");
-                    Console.WriteLine($"Created (UTC): {deserializedFakeAuthorization.Created}");
-                    Console.WriteLine($"Access Scope: {deserializedFakeAuthorization.AccessScope.DisplayName}");
+                    Console.WriteLine($"Created (UTC): {deserializedFakeAuthorization.CreatedAt}");
+                    Console.WriteLine($"Access Scope: {deserializedFakeAuthorization.Scope.DisplayName}");
                     Console.WriteLine($"Refresh Possible: {deserializedFakeAuthorization.IsRefreshPossible}");
                     Console.WriteLine($"Valid: {deserializedFakeAuthorization.IsValid}");
                     Console.WriteLine($"Token Type: {deserializedFakeAuthorization.TokenType.DisplayName}");

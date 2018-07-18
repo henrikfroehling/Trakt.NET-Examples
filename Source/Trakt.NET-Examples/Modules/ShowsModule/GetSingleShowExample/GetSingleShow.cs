@@ -2,10 +2,11 @@
 {
     using System;
     using System.Threading.Tasks;
-    using TraktApiSharp;
-    using TraktApiSharp.Exceptions;
-    using TraktApiSharp.Objects.Get.Shows;
-    using TraktApiSharp.Requests.Params;
+    using TraktNet;
+    using TraktNet.Exceptions;
+    using TraktNet.Objects.Get.Shows;
+    using TraktNet.Requests.Parameters;
+    using TraktNet.Responses;
 
     internal static class GetSingleShow
     {
@@ -14,7 +15,7 @@
 
         private static TraktClient _client = null;
 
-        private static void Main()
+        private static async Task Main()
         {
             try
             {
@@ -24,9 +25,9 @@
                 string showIdOrSlug = Console.ReadLine();
 
                 if (!string.IsNullOrEmpty(showIdOrSlug))
-                    GetShow(showIdOrSlug).Wait();
+                    await GetShow(showIdOrSlug).ConfigureAwait(false);
                 else
-                    GetShow(DEFAULT_SHOW_SLUG).Wait();
+                    await GetShow(DEFAULT_SHOW_SLUG).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -53,8 +54,8 @@
         {
             try
             {
-                await GetShowMinimal(showIdOrSlug);
-                await GetShowFull(showIdOrSlug);
+                await GetShowMinimal(showIdOrSlug).ConfigureAwait(false);
+                await GetShowFull(showIdOrSlug).ConfigureAwait(false);
             }
             catch (TraktException ex)
             {
@@ -66,12 +67,9 @@
                 Console.WriteLine($"Request response: {ex.Response}");
                 Console.WriteLine($"Server Reason Phrase: {ex.ServerReasonPhrase}");
 
-                if (ex is TraktShowNotFoundException)
+                if (ex is TraktShowNotFoundException && ex is TraktShowNotFoundException showEx)
                 {
-                    var showEx = ex as TraktShowNotFoundException;
-
-                    if (showEx != null)
-                        Console.WriteLine($"Show-Id or -Slug: {showEx.ObjectId}");
+                    Console.WriteLine($"Show-Id or -Slug: {showEx.ObjectId}");
                 }
 
                 Console.WriteLine("---------------------------------------------");
@@ -81,8 +79,11 @@
         private static async Task GetShowMinimal(string showIdOrSlug)
         {
             Console.WriteLine("------------------------- Show Minimal -------------------------");
-            TraktShow show = await _client.Shows.GetShowAsync(showIdOrSlug);
-            WriteShowMinimal(show);
+            TraktResponse<ITraktShow> showResponse = await _client.Shows.GetShowAsync(showIdOrSlug).ConfigureAwait(false);
+
+            if (showResponse)
+                WriteShowMinimal(showResponse.Value);
+
             Console.WriteLine("----------------------------------------------------------------");
         }
 
@@ -91,19 +92,22 @@
             var extendedInfo = new TraktExtendedInfo().SetFull();
 
             Console.WriteLine("------------------------- Show Full -------------------------");
-            TraktShow show = await _client.Shows.GetShowAsync(showIdOrSlug, extendedInfo);
-            WriteShowFull(show);
+            TraktResponse<ITraktShow> showResponse = await _client.Shows.GetShowAsync(showIdOrSlug, extendedInfo).ConfigureAwait(false);
+
+            if (showResponse)
+                WriteShowFull(showResponse.Value);
+
             Console.WriteLine("-------------------------------------------------------------");
         }
 
-        private static void WriteShowMinimal(TraktShow show)
+        private static void WriteShowMinimal(ITraktShow show)
         {
             if (show != null)
             {
                 Console.WriteLine($"Title: {show.Title}");
                 Console.WriteLine($"Year: {show.Year ?? 0}");
 
-                TraktShowIds ids = show.Ids;
+                ITraktShowIds ids = show.Ids;
 
                 if (ids != null)
                 {
@@ -117,7 +121,7 @@
             }
         }
 
-        private static void WriteShowFull(TraktShow show)
+        private static void WriteShowFull(ITraktShow show)
         {
             WriteShowMinimal(show);
 
@@ -128,7 +132,7 @@
                 if (show.FirstAired.HasValue)
                     Console.WriteLine($"First Aired (UTC): {show.FirstAired.Value}");
 
-                TraktShowAirs airs = show.Airs;
+                ITraktShowAirs airs = show.Airs;
 
                 if (airs != null)
                 {
