@@ -49,8 +49,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Trakt.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Trakt.NET.1.0.0\lib\netstandard1.1\Trakt.NET.dll</HintPath>
+    <Reference Include="Trakt.NET, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Trakt.NET.1.1.0\lib\netstandard1.1\Trakt.NET.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
