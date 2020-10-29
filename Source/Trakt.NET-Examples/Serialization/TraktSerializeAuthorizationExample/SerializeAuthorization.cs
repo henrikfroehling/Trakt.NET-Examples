@@ -31,7 +31,6 @@
 
             Console.WriteLine("-------------------------------------------------------------");
 
-            //string fakeAuthorizationJson = TraktSerializationService.Serialize(client.Authorization);
             string fakeAuthorizationJson = await TraktSerializationService.SerializeAsync(fakeAuthorization).ConfigureAwait(false);
 
             if (!string.IsNullOrEmpty(fakeAuthorizationJson))
