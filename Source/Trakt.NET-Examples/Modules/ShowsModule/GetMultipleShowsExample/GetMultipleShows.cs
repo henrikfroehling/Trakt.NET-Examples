@@ -1,12 +1,14 @@
 ﻿namespace GetMultipleShowsExample
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
-    using TraktApiSharp;
-    using TraktApiSharp.Exceptions;
-    using TraktApiSharp.Modules;
-    using TraktApiSharp.Objects.Get.Shows;
-    using TraktApiSharp.Requests.Params;
+    using TraktNet;
+    using TraktNet.Exceptions;
+    using TraktNet.Modules;
+    using TraktNet.Objects.Get.Shows;
+    using TraktNet.Requests.Parameters;
+    using TraktNet.Responses;
 
     internal static class GetMultipleShows
     {
@@ -18,7 +20,7 @@
 
         private static TraktClient _client = null;
 
-        private static void Main()
+        private static async Task Main()
         {
             try
             {
@@ -39,7 +41,7 @@
                 string show2 = string.IsNullOrEmpty(showIdOrSlug2) ? DEFAULT_SHOW_SLUG2 : showIdOrSlug2;
                 string show3 = string.IsNullOrEmpty(showIdOrSlug3) ? DEFAULT_SHOW_SLUG3 : showIdOrSlug3;
 
-                GetMultipleShowsAsync(show1, show2, show3).Wait();
+                await GetMultipleShowsAsync(show1, show2, show3).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -73,15 +75,18 @@
 
             try
             {
-                var mutlipleShows = await _client.Shows.GetMultipleShowsAsync(parameters);
+                IEnumerable<TraktResponse<ITraktShow>> responses = await _client.Shows.GetMultipleShowsAsync(parameters).ConfigureAwait(false);
 
-                if (mutlipleShows != null)
+                if (responses != null)
                 {
-                    foreach (TraktShow show in mutlipleShows)
+                    foreach (TraktResponse<ITraktShow> response in responses)
                     {
-                        Console.WriteLine("-------------------------------------------------------------------------");
-                        WriteShowFullWithImages(show);
-                        Console.WriteLine("-------------------------------------------------------------------------");
+                        if (response)
+                        {
+                            Console.WriteLine("-------------------------------------------------------------------------");
+                            WriteShowFullWithImages(response.Value);
+                            Console.WriteLine("-------------------------------------------------------------------------");
+                        }
                     }
                 }
             }
@@ -95,26 +100,23 @@
                 Console.WriteLine($"Request response: {ex.Response}");
                 Console.WriteLine($"Server Reason Phrase: {ex.ServerReasonPhrase}");
 
-                if (ex is TraktShowNotFoundException)
+                if (ex is TraktShowNotFoundException && ex is TraktShowNotFoundException showEx)
                 {
-                    var showEx = ex as TraktShowNotFoundException;
-
-                    if (showEx != null)
-                        Console.WriteLine($"Show-Id or -Slug: {showEx.ObjectId}");
+                    Console.WriteLine($"Show-Id or -Slug: {showEx.ObjectId}");
                 }
 
                 Console.WriteLine("---------------------------------------------");
             }
         }
 
-        private static void WriteShowFullWithImages(TraktShow show)
+        private static void WriteShowFullWithImages(ITraktShow show)
         {
             if (show != null)
             {
                 Console.WriteLine($"Title: {show.Title}");
                 Console.WriteLine($"Year: {show.Year ?? 0}");
 
-                TraktShowIds ids = show.Ids;
+                ITraktShowIds ids = show.Ids;
 
                 if (ids != null)
                 {
@@ -131,7 +133,7 @@
                 if (show.FirstAired.HasValue)
                     Console.WriteLine($"First Aired (UTC): {show.FirstAired.Value}");
 
-                TraktShowAirs airs = show.Airs;
+                ITraktShowAirs airs = show.Airs;
 
                 if (airs != null)
                 {

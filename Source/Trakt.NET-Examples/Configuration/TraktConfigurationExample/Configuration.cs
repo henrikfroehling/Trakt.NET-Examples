@@ -1,8 +1,8 @@
 ﻿namespace TraktConfigurationExample
 {
     using System;
-    using TraktApiSharp;
-    using TraktApiSharp.Authentication;
+    using TraktNet;
+    using TraktNet.Objects.Authentication;
 
     internal static class Configuration
     {

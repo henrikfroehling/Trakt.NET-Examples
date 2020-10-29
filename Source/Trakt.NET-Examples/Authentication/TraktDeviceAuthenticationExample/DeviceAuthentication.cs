@@ -2,9 +2,10 @@
 {
     using System;
     using System.Threading.Tasks;
-    using TraktApiSharp;
-    using TraktApiSharp.Authentication;
-    using TraktApiSharp.Exceptions;
+    using TraktNet;
+    using TraktNet.Exceptions;
+    using TraktNet.Objects.Authentication;
+    using TraktNet.Responses;
 
     internal static class DeviceAuthentication
     {
@@ -13,16 +14,16 @@
 
         private static TraktClient _client = null;
 
-        private static void Main()
+        private static async Task Main()
         {
             try
             {
                 SetupClient();
-                TryToDeviceAuthenticate().Wait();
+                await TryToDeviceAuthenticate().ConfigureAwait(false);
 
-                TraktAuthorization authorization = _client.Authorization;
+                ITraktAuthorization authorization = _client.Authorization;
 
-                if (authorization == null || !authorization.IsValid)
+                if (authorization?.IsValid != true)
                     throw new InvalidOperationException("Trakt Client not authenticated for requests, that require OAuth");
 
                 Console.Write("\nDo you want to refresh the current authorization? [y/n]: ");
@@ -60,30 +61,40 @@
         {
             try
             {
-                TraktDevice device = await _client.DeviceAuth.GenerateDeviceAsync();
+                TraktResponse<ITraktDevice> deviceResponse = await _client.Authentication.GenerateDeviceAsync().ConfigureAwait(false);
 
-                if (device?.IsValid == true)
+                if (deviceResponse)
                 {
-                    Console.WriteLine("-------------- Device created successfully --------------");
-                    Console.WriteLine($"Device Created (UTC): {device.Created}");
-                    Console.WriteLine($"Device Code: {device.DeviceCode}");
-                    Console.WriteLine($"Device expires in {device.ExpiresInSeconds} seconds");
-                    Console.WriteLine($"Device Interval: {device.IntervalInSeconds} seconds");
-                    Console.WriteLine($"Device Expired Unused: {device.IsExpiredUnused}");
-                    Console.WriteLine($"Device Valid: {device.IsValid}");
-                    Console.WriteLine("-------------------------------------------------------");
+                    ITraktDevice device = deviceResponse.Value;
 
-                    Console.WriteLine("You have to authenticate this application.");
-                    Console.WriteLine($"Please visit the following webpage: {device.VerificationUrl}");
-                    Console.WriteLine($"Sign in or sign up on that webpage and enter the following code: {device.UserCode}");
-
-                    TraktAuthorization authorization = await _client.DeviceAuth.PollForAuthorizationAsync();
-
-                    if (authorization?.IsValid == true)
+                    if (device?.IsValid == true)
                     {
-                        Console.WriteLine("-------------- Authentication successful --------------");
-                        WriteAuthorizationInformation(authorization);
+                        Console.WriteLine("-------------- Device created successfully --------------");
+                        Console.WriteLine($"Device Created (UTC): {device.CreatedAt}");
+                        Console.WriteLine($"Device Code: {device.DeviceCode}");
+                        Console.WriteLine($"Device expires in {device.ExpiresInSeconds} seconds");
+                        Console.WriteLine($"Device Interval: {device.IntervalInSeconds} seconds");
+                        Console.WriteLine($"Device Expired Unused: {device.IsExpiredUnused}");
+                        Console.WriteLine($"Device Valid: {device.IsValid}");
                         Console.WriteLine("-------------------------------------------------------");
+
+                        Console.WriteLine("You have to authenticate this application.");
+                        Console.WriteLine($"Please visit the following webpage: {device.VerificationUrl}");
+                        Console.WriteLine($"Sign in or sign up on that webpage and enter the following code: {device.UserCode}");
+
+                        TraktResponse<ITraktAuthorization> authorizationResponse = await _client.Authentication.PollForAuthorizationAsync().ConfigureAwait(false);
+
+                        if (authorizationResponse)
+                        {
+                            ITraktAuthorization authorization = authorizationResponse.Value;
+
+                            if (authorization?.IsValid == true)
+                            {
+                                Console.WriteLine("-------------- Authentication successful --------------");
+                                WriteAuthorizationInformation(authorization);
+                                Console.WriteLine("-------------------------------------------------------");
+                            }
+                        }
                     }
                 }
             }
@@ -101,13 +112,18 @@
         {
             try
             {
-                TraktAuthorization newAuthorization = await _client.DeviceAuth.RefreshAuthorizationAsync();
+                TraktResponse<ITraktAuthorization> newAuthorizationResponse = await _client.Authentication.RefreshAuthorizationAsync().ConfigureAwait(false);
 
-                if (newAuthorization?.IsValid == true)
+                if (newAuthorizationResponse)
                 {
-                    Console.WriteLine("-------------- Authorization refreshed successfully --------------");
-                    WriteAuthorizationInformation(newAuthorization);
-                    Console.WriteLine("-------------------------------------------------------");
+                    ITraktAuthorization newAuthorization = newAuthorizationResponse.Value;
+
+                    if (newAuthorization?.IsValid == true)
+                    {
+                        Console.WriteLine("-------------- Authorization refreshed successfully --------------");
+                        WriteAuthorizationInformation(newAuthorization);
+                        Console.WriteLine("-------------------------------------------------------");
+                    }
                 }
             }
             catch (TraktException ex)
@@ -124,11 +140,15 @@
         {
             try
             {
-                await _client.DeviceAuth.RevokeAuthorizationAsync();
-                // If no exception was thrown, revoking was successfull
-                Console.WriteLine("-----------------------------------");
-                Console.WriteLine("Authorization revoked successfully");
-                Console.WriteLine("-----------------------------------");
+                TraktNoContentResponse response = await _client.Authentication.RevokeAuthorizationAsync().ConfigureAwait(false);
+
+                if (response)
+                {
+                    // If no exception was thrown, revoking was successfull
+                    Console.WriteLine("-----------------------------------");
+                    Console.WriteLine("Authorization revoked successfully");
+                    Console.WriteLine("-----------------------------------");
+                }
             }
             catch (TraktException ex)
             {
@@ -140,10 +160,10 @@
             }
         }
 
-        private static void WriteAuthorizationInformation(TraktAuthorization authorization)
+        private static void WriteAuthorizationInformation(ITraktAuthorization authorization)
         {
-            Console.WriteLine($"Created (UTC): {authorization.Created}");
-            Console.WriteLine($"Access Scope: {authorization.AccessScope.DisplayName}");
+            Console.WriteLine($"Created (UTC): {authorization.CreatedAt}");
+            Console.WriteLine($"Access Scope: {authorization.Scope.DisplayName}");
             Console.WriteLine($"Refresh Possible: {authorization.IsRefreshPossible}");
             Console.WriteLine($"Valid: {authorization.IsValid}");
             Console.WriteLine($"Token Type: {authorization.TokenType.DisplayName}");
@@ -151,7 +171,7 @@
             Console.WriteLine($"Refresh Token: {authorization.RefreshToken}");
             Console.WriteLine($"Token Expired: {authorization.IsExpired}");
 
-            var created = authorization.Created;
+            var created = authorization.CreatedAt;
             var expirationDate = created.AddSeconds(authorization.ExpiresInSeconds);
             var difference = expirationDate - DateTime.UtcNow;
 
