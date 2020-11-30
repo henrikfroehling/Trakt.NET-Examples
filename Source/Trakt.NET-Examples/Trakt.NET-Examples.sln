@@ -15,17 +15,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serialization", "Serializat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ShowsModule", "ShowsModule", "{97861A18-AE37-40BA-8A74-660009FDD5E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TraktDeviceAuthenticationExample", "Authentication\TraktDeviceAuthenticationExample\TraktDeviceAuthenticationExample.csproj", "{0EC9F32C-8253-47D2-8AAB-239C46E4E174}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TraktDeviceAuthenticationExample", "Authentication\TraktDeviceAuthenticationExample\TraktDeviceAuthenticationExample.csproj", "{0EC9F32C-8253-47D2-8AAB-239C46E4E174}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TraktOAuthAuthenticationExample", "Authentication\TraktOAuthAuthenticationExample\TraktOAuthAuthenticationExample.csproj", "{AA00F174-B275-444B-8EAD-BA11C7768917}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TraktOAuthAuthenticationExample", "Authentication\TraktOAuthAuthenticationExample\TraktOAuthAuthenticationExample.csproj", "{AA00F174-B275-444B-8EAD-BA11C7768917}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TraktConfigurationExample", "Configuration\TraktConfigurationExample\TraktConfigurationExample.csproj", "{956E4C99-1C69-437E-9CFE-5E049596EEEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TraktConfigurationExample", "Configuration\TraktConfigurationExample\TraktConfigurationExample.csproj", "{956E4C99-1C69-437E-9CFE-5E049596EEEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetMultipleShowsExample", "Modules\ShowsModule\GetMultipleShowsExample\GetMultipleShowsExample.csproj", "{BF5D9FED-609A-4BB0-A6C1-2BF1E41BE258}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GetMultipleShowsExample", "Modules\ShowsModule\GetMultipleShowsExample\GetMultipleShowsExample.csproj", "{BF5D9FED-609A-4BB0-A6C1-2BF1E41BE258}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetSingleShowExample", "Modules\ShowsModule\GetSingleShowExample\GetSingleShowExample.csproj", "{3761433F-D0F9-49CB-875D-CFB5EED8271F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GetSingleShowExample", "Modules\ShowsModule\GetSingleShowExample\GetSingleShowExample.csproj", "{3761433F-D0F9-49CB-875D-CFB5EED8271F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TraktSerializeAuthorizationExample", "Serialization\TraktSerializeAuthorizationExample\TraktSerializeAuthorizationExample.csproj", "{AA792A4C-33AF-42E3-ABAC-B4D65E4C75F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TraktSerializeAuthorizationExample", "Serialization\TraktSerializeAuthorizationExample\TraktSerializeAuthorizationExample.csproj", "{AA792A4C-33AF-42E3-ABAC-B4D65E4C75F8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GetTrendingShowsExample", "Modules\ShowsModule\GetTrendingShowsExample\GetTrendingShowsExample.csproj", "{1EB7F755-B56F-4717-8469-80E373E8E8AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{AA792A4C-33AF-42E3-ABAC-B4D65E4C75F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA792A4C-33AF-42E3-ABAC-B4D65E4C75F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA792A4C-33AF-42E3-ABAC-B4D65E4C75F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EB7F755-B56F-4717-8469-80E373E8E8AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EB7F755-B56F-4717-8469-80E373E8E8AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EB7F755-B56F-4717-8469-80E373E8E8AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EB7F755-B56F-4717-8469-80E373E8E8AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,6 +79,7 @@ Global
 		{BF5D9FED-609A-4BB0-A6C1-2BF1E41BE258} = {97861A18-AE37-40BA-8A74-660009FDD5E9}
 		{3761433F-D0F9-49CB-875D-CFB5EED8271F} = {97861A18-AE37-40BA-8A74-660009FDD5E9}
 		{AA792A4C-33AF-42E3-ABAC-B4D65E4C75F8} = {97F34E4F-FDA6-4954-B471-44D07B46F43F}
+		{1EB7F755-B56F-4717-8469-80E373E8E8AC} = {97861A18-AE37-40BA-8A74-660009FDD5E9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {257EB724-47D8-4C0A-8447-64891D71A845}
